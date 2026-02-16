@@ -1,0 +1,122 @@
+<main class="detail-wrap">
+  <button class="back-button" (click)="goBack()" type="button">
+    Back
+  </button>
+  @if (product(); as current) {
+    <div class="detail-grid">
+      <section class="gallery">
+        <div class="main-image">
+          <img [src]="selectedImage()" [alt]="current.name" />
+          @if (current.badge) {
+            <span class="badge" [ngClass]="current.badge">{{ current.badge }}</span>
+          }
+        </div>
+        <div class="thumb-row">
+          @for (image of gallery(); track image) {
+            <button
+              [class.active]="selectedImage() === image"
+              (click)="selectImage(image)"
+              type="button"
+            >
+              <img [src]="image" [alt]="current.name + ' view'" />
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="copy">
+        <nav class="crumbs">
+          <a routerLink="/">Shop</a>
+          <span>/</span>
+          <span>{{ current.category }}</span>
+        </nav>
+        <h1>{{ current.name }}</h1>
+        <p class="price">
+          <strong>{{ displayPrice() | currency }}</strong>
+          @if (current.originalPrice) {
+            <small>{{ current.originalPrice | currency }}</small>
+          }
+        </p>
+        <p class="desc">
+          {{
+            current.description ??
+              'Thoughtfully crafted for stylish everyday parent life and gifting.'
+          }}
+        </p>
+
+        @if (current.cta === 'customize') {
+          <div class="block">
+            <div class="label-row">
+              <label for="initials">Personalize with initials</label>
+              <small>Max {{ current.maxInitials ?? 3 }} chars</small>
+            </div>
+            <input
+              id="initials"
+              [value]="selectedInitials()"
+              (input)="updateInitials(initialsInput.value)"
+              #initialsInput
+              type="text"
+              placeholder="ABC"
+            />
+          </div>
+        }
+
+        @if (current.sizes?.length) {
+          <div class="block">
+            <p class="label">Select size</p>
+            <div class="size-row">
+              @for (size of current.sizes; track size.label) {
+                <button
+                  [class.active]="selectedSize() === size.label"
+                  (click)="setSize(size)"
+                  type="button"
+                >
+                  <span>{{ size.label }}</span>
+                  @if (size.subtitle) {
+                    <small>{{ size.subtitle }}</small>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (current.strapColors?.length) {
+          <div class="block">
+            <p class="label">Choose color</p>
+            <div class="color-row">
+              @for (color of current.strapColors; track color.hex) {
+                <button
+                  [class.active]="selectedColor() === color.hex"
+                  [style.background]="color.hex"
+                  (click)="setColor(color)"
+                  [attr.aria-label]="color.name"
+                  type="button"
+                ></button>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="actions">
+          <div class="qty">
+            <button (click)="decreaseQuantity()" type="button">-</button>
+            <span>{{ quantity() }}</span>
+            <button (click)="increaseQuantity()" type="button">+</button>
+          </div>
+          <button class="add" [class.added]="addFeedback()" (click)="addToCart()" type="button">
+            {{ addFeedback() ? 'Added to cart' : 'Add to cart' }}
+          </button>
+        </div>
+
+        <p class="total">Total: <strong>{{ totalPrice() | currency }}</strong></p>
+      </section>
+    </div>
+  } @else {
+    <section class="not-found">
+      <h1>Product not found</h1>
+      <p>That item could not be loaded. Return to the catalog to browse all products.</p>
+      <a routerLink="/">Back to shop</a>
+    </section>
+  }
+</main>

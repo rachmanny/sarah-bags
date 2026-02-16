@@ -15,6 +15,11 @@ export class ProductCatalogService {
     return of(MOCK_PRODUCTS);
   }
 
+  getProductById(id: string): Observable<Product | null> {
+    const found = MOCK_PRODUCTS.find((product) => product.id === id) ?? null;
+    return of(found);
+  }
+
   warmupBackendConnection(): Observable<unknown> {
     return this.http.get(`${this.apiBase}/health`);
   }

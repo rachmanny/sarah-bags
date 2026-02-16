@@ -50,6 +50,34 @@
   padding: 1.2rem;
 }
 
+.filters-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters-head h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.clear-filters {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.32rem 0.62rem;
+}
+
+.clear-filters:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
 .filter-block h2 {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 1rem;
@@ -58,12 +86,17 @@
 
 .category {
   align-items: center;
+  background: transparent;
+  border: 0;
   color: var(--muted);
   cursor: pointer;
   display: flex;
   font-size: 0.92rem;
   justify-content: space-between;
   margin-bottom: 0.65rem;
+  padding: 0;
+  text-align: left;
+  width: 100%;
 }
 
 .category.active,
@@ -81,8 +114,16 @@
 .color-row button {
   border: 1px solid #ded0d4;
   border-radius: 999px;
+  cursor: pointer;
   height: 26px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
   width: 26px;
+}
+
+.color-row button.active {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px #fff inset, 0 0 0 1px var(--ink);
+  transform: scale(1.08);
 }
 
 .filters input[type='range'] {
@@ -129,12 +170,56 @@
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 }
 
+.pagination {
+  align-items: center;
+  display: flex;
+  gap: 0.55rem;
+  justify-content: center;
+  margin-top: 1.6rem;
+}
+
+.page-nav,
+.page-number {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e6d5da;
+  border-radius: 999px;
+  color: #78869a;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.92rem;
+  font-weight: 700;
+  height: 38px;
+  justify-content: center;
+  min-width: 38px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.page-nav:disabled {
+  color: #bfc7d3;
+  cursor: default;
+}
+
+.page-number.active {
+  background: var(--rose);
+  border-color: var(--rose);
+  color: #fff;
+}
+
+.page-ellipsis {
+  color: #9aa6b7;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  padding: 0 0.2rem;
+}
+
 .product-card {
   animation: rise 0.42s ease;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 1rem;
   box-shadow: var(--shadow);
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -280,9 +365,124 @@
   color: #fff;
 }
 
+.quick-view-backdrop {
+  background: rgba(16, 10, 11, 0.45);
+  border: 0;
+  inset: 0;
+  position: fixed;
+  z-index: 42;
+}
+
+.quick-view-modal {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  box-shadow: 0 30px 70px rgba(26, 14, 15, 0.24);
+  left: 50%;
+  max-height: calc(100dvh - 2rem);
+  max-width: 760px;
+  overflow: auto;
+  padding: 1rem;
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100vw - 2rem);
+  z-index: 43;
+}
+
+.quick-view-modal header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+}
+
+.quick-view-modal h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+}
+
+.quick-view-modal header button {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  height: 30px;
+  width: 30px;
+}
+
+.quick-view-content {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.quick-view-content img {
+  aspect-ratio: 1 / 1;
+  border-radius: 0.8rem;
+  object-fit: cover;
+  width: 100%;
+}
+
+.quick-price {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.35rem 0 0;
+}
+
+.quick-price span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.quick-copy {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.quick-palette {
+  display: flex;
+  gap: 0.3rem;
+  margin: 0.55rem 0 0.8rem;
+}
+
+.quick-palette i {
+  border: 1px solid #d9cfd1;
+  border-radius: 999px;
+  display: block;
+  height: 16px;
+  width: 16px;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.quick-actions button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.6rem 0.8rem;
+}
+
+.quick-actions button:first-child {
+  background: var(--rose);
+  border-color: var(--rose);
+  color: #fff;
+}
+
 @media (min-width: 760px) {
   .content-wrap {
     padding: 0 1.5rem;
+  }
+
+  .quick-view-content {
+    grid-template-columns: 1.15fr 1fr;
   }
 }
 

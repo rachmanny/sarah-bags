@@ -10,31 +10,61 @@
 
   <div class="layout">
     <aside class="filters">
+      <div class="filters-head">
+        <h2>Filters</h2>
+        <button
+          class="clear-filters"
+          [disabled]="!hasActiveFilters()"
+          (click)="clearAllFilters()"
+          type="button"
+        >
+          Clear all
+        </button>
+      </div>
+
       <div class="filter-block">
         <h2>Categories</h2>
-        @for (category of categories; track category.name) {
-          <label class="category" [ngClass]="{ active: category.active }">
+        @for (category of categories(); track category.name) {
+          <button
+            class="category"
+            [ngClass]="{ active: isCategoryActive(category.name) }"
+            (click)="toggleCategory(category.name)"
+            type="button"
+          >
             <span>{{ category.name }}</span>
             <small>({{ category.count }})</small>
-          </label>
+          </button>
         }
       </div>
 
       <div class="filter-block">
         <h2>Color Palette</h2>
         <div class="color-row">
-          @for (color of colors; track color) {
-            <button [style.background]="color" type="button"></button>
+          @for (color of colors(); track color) {
+            <button
+              [style.background]="color"
+              [class.active]="isColorActive(color)"
+              (click)="toggleColor(color)"
+              [attr.aria-label]="'Filter color ' + color"
+              type="button"
+            ></button>
           }
         </div>
       </div>
 
       <div class="filter-block">
         <h2>Price Range</h2>
-        <input type="range" />
+        <input
+          type="range"
+          min="0"
+          [max]="maxCatalogPrice()"
+          [value]="selectedMaxPrice()"
+          (input)="updatePriceRange(priceRange.value)"
+          #priceRange
+        />
         <div class="range-row">
           <span>$0</span>
-          <span>$200+</span>
+          <span>{{ selectedMaxPrice() | currency }}</span>
         </div>
       </div>
     </aside>
@@ -43,20 +73,24 @@
       <div class="products-head">
         <p>
           Showing
-          <strong>{{ (products$ | async)?.length ?? 0 }}</strong>
+          <strong>{{ products().length }}</strong>
           products
         </p>
-        <select>
-          <option>Sort by: Newest</option>
-          <option>Price: Low to High</option>
-          <option>Price: High to Low</option>
-          <option>Most Popular</option>
+        <select
+          [value]="selectedSort()"
+          (change)="updateSort(sortSelect.value)"
+          #sortSelect
+        >
+          <option value="newest">Sort by: Newest</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="name">Name: A to Z</option>
         </select>
       </div>
 
       <div class="product-grid">
-        @for (product of products$ | async; track product.id) {
-          <article class="product-card">
+        @for (product of pagedProducts(); track product.id) {
+          <article class="product-card" (click)="openProduct(product)">
             <div class="image-wrap">
               @if (product.badge) {
                 <span class="badge" [ngClass]="product.badge">
@@ -64,7 +98,9 @@
                 </span>
               }
               <img [alt]="product.name" [src]="product.image" />
-              <button type="button">Quick View</button>
+              <button (click)="openQuickView(product, $event)" type="button">
+                Quick View
+              </button>
             </div>
             <div class="card-body">
               <p class="category-label">{{ product.category }}</p>
@@ -86,14 +122,14 @@
                 class="cta"
                 [class.is-added]="recentlyAddedId() === product.id"
                 [ngClass]="product.cta"
-                (click)="addToCart(product)"
+                (click)="onProductCta(product, $event)"
                 type="button"
               >
                 {{
                   recentlyAddedId() === product.id
                     ? 'Added'
                     : product.cta === 'customize'
-                      ? 'Customize & Add'
+                      ? 'Customize'
                       : 'Add to Cart'
                 }}
               </button>
@@ -101,6 +137,89 @@
           </article>
         }
       </div>
+
+      @if (totalPages() > 1) {
+        <nav class="pagination" aria-label="Pagination">
+          <button
+            class="page-nav"
+            [disabled]="currentPage() === 1"
+            (click)="goToPreviousPage()"
+            type="button"
+            aria-label="Previous page"
+          >
+            &#8249;
+          </button>
+
+          @for (item of pageItems(); track item === 'ellipsis' ? 'dots-' + $index : item) {
+            @if (item === 'ellipsis') {
+              <span class="page-ellipsis">...</span>
+            } @else {
+              <button
+                class="page-number"
+                [class.active]="currentPage() === item"
+                (click)="goToPage(item)"
+                type="button"
+                [attr.aria-label]="'Go to page ' + item"
+              >
+                {{ item }}
+              </button>
+            }
+          }
+
+          <button
+            class="page-nav"
+            [disabled]="currentPage() === totalPages()"
+            (click)="goToNextPage()"
+            type="button"
+            aria-label="Next page"
+          >
+            &#8250;
+          </button>
+        </nav>
+      }
     </section>
   </div>
 </main>
+
+@if (quickViewProduct(); as quickProduct) {
+  <button class="quick-view-backdrop" (click)="closeQuickView()" type="button"></button>
+  <section class="quick-view-modal" aria-label="Quick view">
+    <header>
+      <h3>{{ quickProduct.name }}</h3>
+      <button (click)="closeQuickView()" type="button" aria-label="Close quick view">
+        X
+      </button>
+    </header>
+    <div class="quick-view-content">
+      <img [src]="quickProduct.image" [alt]="quickProduct.name" />
+      <div>
+        <p class="category-label">{{ quickProduct.category }}</p>
+        <p class="quick-price">
+          <strong>{{ quickProduct.price | currency }}</strong>
+          @if (quickProduct.originalPrice) {
+            <span>{{ quickProduct.originalPrice | currency }}</span>
+          }
+        </p>
+        <p class="quick-copy">
+          {{
+            quickProduct.description ??
+              'A premium piece built for everyday family life and gifting.'
+          }}
+        </p>
+        @if (quickProduct.palette?.length) {
+          <div class="quick-palette">
+            @for (dot of quickProduct.palette; track dot) {
+              <i [style.background]="dot"></i>
+            }
+          </div>
+        }
+        <div class="quick-actions">
+          <button (click)="onQuickViewCta(quickProduct)" type="button">
+            {{ quickProduct.cta === 'customize' ? 'Customize Now' : 'Add to Cart' }}
+          </button>
+          <button (click)="openProduct(quickProduct)" type="button">View Details</button>
+        </div>
+      </div>
+    </div>
+  </section>
+}
