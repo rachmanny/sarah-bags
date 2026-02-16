@@ -1,0 +1,106 @@
+<main class="content-wrap">
+  <section class="hero">
+    <p class="crumbs">Home / Shop All Collections</p>
+    <h1>Shop All Collections</h1>
+    <p>
+      Discover personalized essentials built for parents, babies, and everyday
+      life.
+    </p>
+  </section>
+
+  <div class="layout">
+    <aside class="filters">
+      <div class="filter-block">
+        <h2>Categories</h2>
+        @for (category of categories; track category.name) {
+          <label class="category" [ngClass]="{ active: category.active }">
+            <span>{{ category.name }}</span>
+            <small>({{ category.count }})</small>
+          </label>
+        }
+      </div>
+
+      <div class="filter-block">
+        <h2>Color Palette</h2>
+        <div class="color-row">
+          @for (color of colors; track color) {
+            <button [style.background]="color" type="button"></button>
+          }
+        </div>
+      </div>
+
+      <div class="filter-block">
+        <h2>Price Range</h2>
+        <input type="range" />
+        <div class="range-row">
+          <span>$0</span>
+          <span>$200+</span>
+        </div>
+      </div>
+    </aside>
+
+    <section class="products">
+      <div class="products-head">
+        <p>
+          Showing
+          <strong>{{ (products$ | async)?.length ?? 0 }}</strong>
+          products
+        </p>
+        <select>
+          <option>Sort by: Newest</option>
+          <option>Price: Low to High</option>
+          <option>Price: High to Low</option>
+          <option>Most Popular</option>
+        </select>
+      </div>
+
+      <div class="product-grid">
+        @for (product of products$ | async; track product.id) {
+          <article class="product-card">
+            <div class="image-wrap">
+              @if (product.badge) {
+                <span class="badge" [ngClass]="product.badge">
+                  {{ badgeLabel(product.badge) }}
+                </span>
+              }
+              <img [alt]="product.name" [src]="product.image" />
+              <button type="button">Quick View</button>
+            </div>
+            <div class="card-body">
+              <p class="category-label">{{ product.category }}</p>
+              <h3>{{ product.name }}</h3>
+              <div class="price-row">
+                <strong>{{ product.price | currency }}</strong>
+                @if (product.originalPrice) {
+                  <span>{{ product.originalPrice | currency }}</span>
+                }
+                @if (product.palette?.length) {
+                  <div class="mini-colors">
+                    @for (dot of product.palette; track dot) {
+                      <i [style.background]="dot"></i>
+                    }
+                  </div>
+                }
+              </div>
+              <button
+                class="cta"
+                [class.is-added]="recentlyAddedId() === product.id"
+                [ngClass]="product.cta"
+                (click)="addToCart(product)"
+                type="button"
+              >
+                {{
+                  recentlyAddedId() === product.id
+                    ? 'Added'
+                    : product.cta === 'customize'
+                      ? 'Customize & Add'
+                      : 'Add to Cart'
+                }}
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  </div>
+</main>

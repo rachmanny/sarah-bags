@@ -1,0 +1,52 @@
+:host {
+  display: block;
+}
+
+.about-wrap {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 2.2rem 1.25rem;
+}
+
+.about-card {
+  animation: reveal 0.4s ease;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+  max-width: 760px;
+  padding: 1.4rem;
+}
+
+.eyebrow {
+  color: var(--rose);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  margin: 0.55rem 0 0.75rem;
+}
+
+p {
+  color: var(--muted);
+  margin: 0 0 0.85rem;
+  max-width: 65ch;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,105 @@
+<div class="app-shell">
+  <header class="site-header">
+    <nav class="nav-wrap">
+      <a class="brand" routerLink="/">Sarah's <span>Bags</span></a>
+      <div class="nav-links">
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Home
+        </a>
+        <a routerLink="/about" routerLinkActive="active">About Us</a>
+      </div>
+      <div class="nav-actions">
+        <button type="button">Search</button>
+        <button type="button">Account</button>
+        <button class="cart-btn" (click)="toggleCart()" type="button">
+          Live Cart
+          @if (cart.totalItems() > 0) {
+            <span>{{ cart.totalItems() }}</span>
+          }
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <router-outlet />
+
+  <footer class="site-footer">
+    <section>
+      <a class="brand" routerLink="/">Sarah's <span>Bags</span></a>
+      <p>
+        Personalized, practical, and beautifully made bags for everyday life.
+      </p>
+    </section>
+
+    <section>
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#">All Collections</a></li>
+        <li><a href="#">Best Sellers</a></li>
+        <li><a href="#">Gift Sets</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Shipping</a></li>
+        <li><a href="#">Returns</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </section>
+  </footer>
+</div>
+
+<button
+  class="cart-overlay"
+  [class.open]="isCartOpen"
+  (click)="closeCart()"
+  type="button"
+  aria-label="Close cart"
+></button>
+
+<aside class="cart-drawer" [ngClass]="{ open: isCartOpen }" aria-label="Live cart">
+  <header>
+    <h3>Live Cart</h3>
+    <button (click)="closeCart()" type="button" aria-label="Close cart">X</button>
+  </header>
+
+  @if (cart.lines().length === 0) {
+    <div class="empty-state">
+      <p>Your cart is empty.</p>
+      <small>Add a product to see it update instantly.</small>
+    </div>
+  } @else {
+    <ul>
+      @for (line of cart.lines(); track trackByProductId($index, line)) {
+        <li>
+          <img [src]="line.product.image" [alt]="line.product.name" />
+          <div class="item-copy">
+            <h4>{{ line.product.name }}</h4>
+            <p>{{ line.product.price | currency }}</p>
+            <div class="qty-row">
+              <button (click)="cart.decrease(line.product.id)" type="button">-</button>
+              <span>{{ line.quantity }}</span>
+              <button (click)="cart.increase(line.product.id)" type="button">+</button>
+              <button class="remove" (click)="cart.remove(line.product.id)" type="button">
+                Remove
+              </button>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+    <div class="drawer-footer">
+      <p>
+        Subtotal
+        <strong>{{ cart.subtotal() | currency }}</strong>
+      </p>
+      <button class="checkout" type="button">Checkout</button>
+    </div>
+  }
+</aside>
