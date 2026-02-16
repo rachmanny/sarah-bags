@@ -1,0 +1,11 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v22.14.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:D:\Websites\Sarah\sarah-bags\.npmrc
+5 silly config load:file:C:\Users\david\.npmrc
+6 silly config load:file:C:\Users\david\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install"
+9 verbose logfile logs-max:10 dir:D:\Websites\Sarah\sarah-bags\$(pwd)\_logs\2026-02-16T05_12_38_586Z-
+10 verbose logfile D:\Websites\Sarah\sarah-bags\$(pwd)\_logs\2026-02-16T05_12_38_586Z-debug-0.log
