@@ -9,7 +9,26 @@
   </section>
 
   <div class="layout">
-    <aside class="filters">
+    <button
+      class="mobile-filter-toggle"
+      [class.open]="mobileFiltersOpen()"
+      (click)="toggleMobileFilters()"
+      type="button"
+      aria-controls="catalog-filters"
+      [attr.aria-expanded]="mobileFiltersOpen()"
+    >
+      <span>Filters</span>
+      @if (activeFilterCount() > 0) {
+        <small>{{ activeFilterCount() }} active</small>
+      }
+      <i>{{ mobileFiltersOpen() ? 'Hide' : 'Show' }}</i>
+    </button>
+
+    <aside
+      class="filters"
+      id="catalog-filters"
+      [class.mobile-hidden]="!mobileFiltersOpen()"
+    >
       <div class="filters-head">
         <h2>Filters</h2>
         <button
@@ -69,23 +88,26 @@
       </div>
     </aside>
 
-    <section class="products">
+    <section class="products" #productsSection>
       <div class="products-head">
-        <p>
-          Showing
+        <p class="products-count" aria-live="polite">
+          <span>Showing</span>
           <strong>{{ products().length }}</strong>
-          products
+          <span>products</span>
         </p>
-        <select
-          [value]="selectedSort()"
-          (change)="updateSort(sortSelect.value)"
-          #sortSelect
-        >
-          <option value="newest">Sort by: Newest</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="name">Name: A to Z</option>
-        </select>
+        <label class="sort-field">
+          <span>Sort by</span>
+          <select
+            [value]="selectedSort()"
+            (change)="updateSort(sortSelect.value)"
+            #sortSelect
+          >
+            <option value="newest">Newest</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name">Name: A to Z</option>
+          </select>
+        </label>
       </div>
 
       <div class="product-grid">

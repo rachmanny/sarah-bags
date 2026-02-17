@@ -1,11 +1,13 @@
 import { CurrencyPipe, NgClass } from '@angular/common';
 import {
   Component,
+  ElementRef,
   OnDestroy,
   computed,
   effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -38,7 +40,9 @@ export class HomeComponent implements OnDestroy {
   readonly selectedColors = signal<string[]>([]);
   readonly selectedSort = signal('newest');
   readonly selectedMaxPrice = signal(200);
+  readonly mobileFiltersOpen = signal(false);
   readonly currentPage = signal(1);
+  readonly productsSectionRef = viewChild<ElementRef<HTMLElement>>('productsSection');
   readonly maxCatalogPrice = computed(() =>
     Math.max(200, ...this.allProducts().map((product) => product.price)),
   );
@@ -104,6 +108,15 @@ export class HomeComponent implements OnDestroy {
       this.selectedMaxPrice() < this.maxCatalogPrice() ||
       this.selectedSort() !== 'newest',
   );
+  readonly activeFilterCount = computed(() => {
+    let count = 0;
+    count += this.selectedCategories().length;
+    count += this.selectedColors().length;
+    if (this.selectedMaxPrice() < this.maxCatalogPrice()) {
+      count += 1;
+    }
+    return count;
+  });
   readonly totalPages = computed(() =>
     Math.max(1, Math.ceil(this.products().length / this.productsPerPage)),
   );
@@ -186,9 +199,17 @@ export class HomeComponent implements OnDestroy {
     this.currentPage.set(1);
   }
 
+  toggleMobileFilters(): void {
+    this.mobileFiltersOpen.update((open) => !open);
+  }
+
   goToPage(page: number): void {
     const safePage = Math.min(Math.max(1, page), this.totalPages());
+    if (safePage === this.currentPage()) {
+      return;
+    }
     this.currentPage.set(safePage);
+    this.scrollToProductsTop();
   }
 
   goToPreviousPage(): void {
@@ -251,6 +272,22 @@ export class HomeComponent implements OnDestroy {
     if (this.addFeedbackTimer) {
       clearTimeout(this.addFeedbackTimer);
     }
+  }
+
+  private scrollToProductsTop(): void {
+    const section = this.productsSectionRef()?.nativeElement;
+    if (!section) {
+      return;
+    }
+
+    const stickyHeaderOffset = 92;
+    const targetY =
+      section.getBoundingClientRect().top + window.scrollY - stickyHeaderOffset;
+
+    window.scrollTo({
+      top: Math.max(0, targetY),
+      behavior: 'smooth',
+    });
   }
 
   private buildPageItems(

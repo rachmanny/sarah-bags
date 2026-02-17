@@ -12,7 +12,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { ProductCatalogService } from '../core/data/product-catalog.service';
 import { Product, ProductColorOption, ProductSizeOption } from '../core/models/product.model';
-import { CartService } from '../core/state/cart.service';
+import { CartLineCustomization, CartService } from '../core/state/cart.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -74,6 +74,18 @@ export class ProductDetailComponent implements OnDestroy {
     }
     return current.sizes.find((size) => size.label === selected) ?? null;
   });
+  readonly selectedColorName = computed(() => {
+    const current = this.product();
+    const selectedHex = this.selectedColor();
+    if (!current?.strapColors?.length || !selectedHex) {
+      return null;
+    }
+
+    return (
+      current.strapColors.find((option) => option.hex === selectedHex)?.name ??
+      null
+    );
+  });
 
   constructor() {
     effect(() => {
@@ -132,9 +144,18 @@ export class ProductDetailComponent implements OnDestroy {
       return;
     }
 
-    for (let i = 0; i < this.quantity(); i += 1) {
-      this.cart.add(current);
-    }
+    const customization: CartLineCustomization = {
+      initials: this.selectedInitials() || undefined,
+      colorHex: this.selectedColor() ?? undefined,
+      colorName: this.selectedColorName() ?? undefined,
+      sizeLabel: this.selectedSize() ?? undefined,
+    };
+
+    this.cart.add(current, {
+      quantity: this.quantity(),
+      unitPrice: this.displayPrice(),
+      customization,
+    });
 
     this.addFeedback.set(true);
     if (this.addFeedbackTimer) {

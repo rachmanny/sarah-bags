@@ -10,7 +10,7 @@
 }
 
 .back-button {
-  background: #fff;
+  background: linear-gradient(180deg, #fff, #f9eef1);
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--ink);
@@ -18,7 +18,17 @@
   font-size: 0.84rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  padding: 0.45rem 0.78rem;
+  padding: 0.5rem 0.88rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.back-button:hover {
+  border-color: #e2c4cb;
+  box-shadow: 0 8px 16px rgba(45, 20, 24, 0.12);
+  transform: translateY(-1px);
 }
 
 .detail-grid {
@@ -84,6 +94,11 @@
   cursor: pointer;
   overflow: hidden;
   padding: 0;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.thumb-row button:hover {
+  transform: translateY(-1px);
 }
 
 .thumb-row button.active {
@@ -99,6 +114,7 @@
 }
 
 .copy {
+  animation: riseIn 0.36s ease;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 1rem;
@@ -201,6 +217,12 @@ input {
   flex-direction: column;
   gap: 0.2rem;
   padding: 0.6rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.size-row button:hover {
+  border-color: #e5c8cf;
+  transform: translateY(-1px);
 }
 
 .size-row button.active {
@@ -223,12 +245,17 @@ input {
   border-radius: 999px;
   cursor: pointer;
   height: 34px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
   width: 34px;
 }
 
 .color-row button.active {
   border-color: var(--ink);
   box-shadow: 0 0 0 2px #fff inset, 0 0 0 1px var(--ink);
+}
+
+.color-row button:hover {
+  transform: scale(1.05);
 }
 
 .actions {
@@ -253,7 +280,13 @@ input {
   cursor: pointer;
   font-weight: 700;
   height: 34px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
   width: 34px;
+}
+
+.qty button:hover {
+  border-color: #e5c8cf;
+  transform: translateY(-1px);
 }
 
 .qty span {
@@ -274,6 +307,13 @@ input {
   font-size: 0.92rem;
   font-weight: 700;
   padding: 0.74rem;
+  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add:hover {
+  box-shadow: 0 12px 22px rgba(56, 17, 24, 0.2);
+  filter: brightness(1.02);
+  transform: translateY(-1px);
 }
 
 .add.added {
@@ -320,5 +360,17 @@ input {
   .gallery {
     position: sticky;
     top: 88px;
+  }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
