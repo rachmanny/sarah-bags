@@ -95,19 +95,41 @@
           <strong>{{ products().length }}</strong>
           <span>products</span>
         </p>
-        <label class="sort-field">
+        <div class="sort-field">
           <span>Sort by</span>
-          <select
-            [value]="selectedSort()"
-            (change)="updateSort(sortSelect.value)"
-            #sortSelect
-          >
-            <option value="newest">Newest</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="name">Name: A to Z</option>
-          </select>
-        </label>
+          <div class="sort-dropdown" [class.open]="sortMenuOpen()" (click)="$event.stopPropagation()">
+            <button
+              class="sort-trigger"
+              (click)="toggleSortMenu($event)"
+              type="button"
+              aria-haspopup="listbox"
+              [attr.aria-expanded]="sortMenuOpen()"
+              aria-label="Sort products"
+            >
+              <span>{{ selectedSortLabel() }}</span>
+              <i>&#9662;</i>
+            </button>
+            @if (sortMenuOpen()) {
+              <div class="sort-menu" role="listbox" aria-label="Sort products options">
+                @for (option of sortOptions; track option.value) {
+                  <button
+                    class="sort-option"
+                    [class.active]="isSortOptionActive(option.value)"
+                    (click)="selectSortOption(option.value)"
+                    type="button"
+                    role="option"
+                    [attr.aria-selected]="isSortOptionActive(option.value)"
+                  >
+                    <span>{{ option.label }}</span>
+                    @if (isSortOptionActive(option.value)) {
+                      <i>&#9679;</i>
+                    }
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
       </div>
 
       <div class="product-grid">

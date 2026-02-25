@@ -2,6 +2,7 @@ import { CurrencyPipe, NgClass } from '@angular/common';
 import {
   Component,
   ElementRef,
+  HostListener,
   OnDestroy,
   computed,
   effect,
@@ -39,6 +40,13 @@ export class HomeComponent implements OnDestroy {
   readonly selectedCategories = signal<string[]>([]);
   readonly selectedColors = signal<string[]>([]);
   readonly selectedSort = signal('newest');
+  readonly sortMenuOpen = signal(false);
+  readonly sortOptions = [
+    { value: 'newest', label: 'Newest Arrivals' },
+    { value: 'price-low', label: 'Price: Low to High' },
+    { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'name', label: 'Name: A to Z' },
+  ] as const;
   readonly selectedMaxPrice = signal(200);
   readonly mobileFiltersOpen = signal(false);
   readonly currentPage = signal(1);
@@ -128,6 +136,11 @@ export class HomeComponent implements OnDestroy {
   readonly pageItems = computed(() =>
     this.buildPageItems(this.currentPage(), this.totalPages()),
   );
+  readonly selectedSortLabel = computed(
+    () =>
+      this.sortOptions.find((option) => option.value === this.selectedSort())
+        ?.label ?? 'Newest Arrivals',
+  );
 
   constructor() {
     effect(() => {
@@ -188,6 +201,7 @@ export class HomeComponent implements OnDestroy {
 
   updateSort(value: string): void {
     this.selectedSort.set(value);
+    this.sortMenuOpen.set(false);
     this.currentPage.set(1);
   }
 
@@ -201,6 +215,19 @@ export class HomeComponent implements OnDestroy {
 
   toggleMobileFilters(): void {
     this.mobileFiltersOpen.update((open) => !open);
+  }
+
+  toggleSortMenu(event?: Event): void {
+    event?.stopPropagation();
+    this.sortMenuOpen.update((open) => !open);
+  }
+
+  selectSortOption(value: string): void {
+    this.updateSort(value);
+  }
+
+  isSortOptionActive(value: string): boolean {
+    return this.selectedSort() === value;
   }
 
   goToPage(page: number): void {
@@ -271,6 +298,20 @@ export class HomeComponent implements OnDestroy {
     this.quickViewProduct.set(null);
     if (this.addFeedbackTimer) {
       clearTimeout(this.addFeedbackTimer);
+    }
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    if (this.sortMenuOpen()) {
+      this.sortMenuOpen.set(false);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePress(): void {
+    if (this.sortMenuOpen()) {
+      this.sortMenuOpen.set(false);
     }
   }
 
